@@ -1,0 +1,45 @@
+<html>
+	<head>
+		<title>Websocket Relay</title>
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+	</head>
+
+	<style>
+	</style>
+	
+	<body>
+		<div>Hello</div>
+		<button id="sendButton">send</button>
+		<input id="messageTextbox" type="text"/>
+		</br>
+		<textarea id="receiveBox" disabled=true style="width:300px;height:300px"></textarea>
+	</body>
+
+	<script src="/WebsocketRelayClient.js"></script> 
+	<script>
+		var websocketRelayClient = new WebsocketRelayClient();
+
+		var sendButton = document.getElementById('sendButton');
+		var messageTextbox = document.getElementById('messageTextbox');
+		var receiveBox = document.getElementById('receiveBox');
+
+		messageTextbox.addEventListener('keydown', 
+			function(event) {
+				if ( event.keyCode===13 ) {
+					websocketRelayClient.send(messageTextbox.value);		
+				} 
+			})
+
+		sendButton.addEventListener('click', 
+			function(){
+				websocketRelayClient.send(messageTextbox.value);
+			});
+			
+		websocketRelayClient.onMessageReceived = 
+			function(message){
+				receiveBox.innerHTML += message + '\n';
+			};
+
+	</script>
+	
+</html>

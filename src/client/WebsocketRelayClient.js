@@ -8,19 +8,32 @@ function WebsocketRelayClient() {
     this._onSocketCloseHandler = this._onSocketClose.bind(this);
     this._openWebsocket();
 
-    this.onMessageReceived = null;
+    this._senderID = Math.floor(Math.random()*100000);
+
+    this.onTextMessageReceived = null;
+    this.onPingResultReceived = null;
 }
 
 WebsocketRelayClient.prototype.dispose = function() {
     this._closeWebsocket();
 };
 
-WebsocketRelayClient.prototype.send = function( data ) {
-    if (this._websocket.readyState !== 1) {
-        console.warn('WebsocketRelayClient.send: websocket not ready for sending');
-        return;
+WebsocketRelayClient.prototype.sendTextMessage = function( text ) {
+    var message = {
+        type:'text',
+        text:text
     }
-    this._websocket.send(data);
+    this._sendSocketMessage(message);
+};
+
+WebsocketRelayClient.prototype.ping = function() {
+    var message = {
+        type:'ping',
+        senderID: this._senderID,
+        receiverID: null,
+        timestamp: performance.now()
+    };
+    this._sendSocketMessage(message);
 };
 
 WebsocketRelayClient.prototype._openWebsocket = function() {
@@ -53,12 +66,34 @@ WebsocketRelayClient.prototype._onSocketOpen = function() {
   	console.log("Websocket opened");
 };
 
+WebsocketRelayClient.prototype._sendSocketMessage = function( jsonObject ) {
+    if (this._websocket.readyState !== 1) {
+        console.warn('WebsocketRelayClient.send: websocket not ready for sending');
+        return;
+    }
+    var jsonString = JSON.stringify(jsonObject);
+    this._websocket.send(jsonString);
+};
+
 WebsocketRelayClient.prototype._onSocketMessage = function( message ) {
-	var data = message.data;
-	console.log(data);
-	if ( this.onMessageReceived ) {
-		this.onMessageReceived(data);
-	}
+    var jsonString = message.data;
+    var jsonObject = JSON.parse(jsonString);
+    if ( jsonObject.type==='text') {
+        if ( this.onTextMessageReceived ) {
+            this.onTextMessageReceived(jsonObject.text);
+        }
+    } else if ( jsonObject.type==='ping') {
+        if ( jsonObject.senderID===this._senderID && jsonObject.receiverID!==null ) {
+            var ping = performance.now() - jsonObject.timestamp;
+            if ( this.onPingResultReceived ) {
+                this.onPingResultReceived( {receiverID:jsonObject.receiverID, ping:ping} );
+            }
+        } else {
+            jsonObject.receiverID = this._senderID;
+            this._sendSocketMessage( jsonObject );
+        }
+    }
+	console.log(jsonString);
 };
 
 WebsocketRelayClient.prototype._onSocketError = function(error) {

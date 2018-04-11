@@ -9,6 +9,7 @@
 	
 	<body>
 		<div>Hello</div>
+		<button id="pingButton">ping</button>
 		<button id="sendButton">send</button>
 		<input id="messageTextbox" type="text"/>
 		</br>
@@ -19,23 +20,34 @@
 	<script>
 		var websocketRelayClient = new WebsocketRelayClient();
 
+		var pingButton = document.getElementById('pingButton');
 		var sendButton = document.getElementById('sendButton');
 		var messageTextbox = document.getElementById('messageTextbox');
 		var receiveBox = document.getElementById('receiveBox');
 
+		pingButton.addEventListener('click', 
+			function(){
+				websocketRelayClient.ping();
+			});
+
+		websocketRelayClient.onPingResultReceived = 
+			function(result){
+				receiveBox.innerHTML += "PING: " + result.ping.toFixed(2) + " from:" + result.receiverID + '\n';
+			};
+
 		messageTextbox.addEventListener('keydown', 
 			function(event) {
 				if ( event.keyCode===13 ) {
-					websocketRelayClient.send(messageTextbox.value);		
+					websocketRelayClient.sendTextMessage(messageTextbox.value);		
 				} 
 			})
 
 		sendButton.addEventListener('click', 
 			function(){
-				websocketRelayClient.send(messageTextbox.value);
+				websocketRelayClient.sendTextMessage(messageTextbox.value);
 			});
 			
-		websocketRelayClient.onMessageReceived = 
+		websocketRelayClient.onTextMessageReceived = 
 			function(message){
 				receiveBox.innerHTML += message + '\n';
 			};

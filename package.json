@@ -1,0 +1,19 @@
+{
+  "name": "websocketrelay",
+  "version": "1.0.0",
+  "description": "A little experiment about websocket performances",
+  "main": "WebsocketRelayServer.js",
+  "dependencies": {
+    "websocket": "^1.0.25"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jbitoniau/WebsocketRelay.git"
+  },
+  "author": "",
+  "license": "MIT"
+}

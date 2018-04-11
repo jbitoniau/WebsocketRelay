@@ -21,7 +21,7 @@ function WebsocketRelayServer(port) {
         if (path.indexOf('/') === 0) {
             var filename = path.substr(1);
             if (filename.length === 0) {
-                filename = 'WebsocketRelay.html';
+                filename = 'WebsocketRelay.html';   
             }
             WebsocketRelayServer._serveFile(filename, res);
         } else {
@@ -122,7 +122,7 @@ WebsocketRelayServer._serveFile = function(filename, res) {
     }
     console.log('Serving file: ' + filename + ' as ' + contentType);
 
-    //filename = 'Client/' + filename;
+    filename = 'src/client/' + filename;  // Not great!
 
     fs.readFile(filename, 'utf8', function(err, data) {
         if (err) {

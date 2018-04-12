@@ -17,7 +17,7 @@
 		</br>
 		<button id="sendBinaryButton">send binary</button>
 		<span>value<input id="binaryValueTextbox" type="text" value="65"/></span>
-		<span>num bytes<input id="binaryNumBytesTextbox" type="text" value="10"/></span>
+		<span>num bytes<input id="binaryNumBytesTextbox" type="text" value="65000"/></span>
 		</br>
 		<textarea id="receiveBinaryBox" disabled=true style="width:300px;height:200px"></textarea>
 	</body>
@@ -74,10 +74,14 @@
 				var numBytes = parseInt(binaryNumBytesTextbox.value);
 				var arrayBuffer = new ArrayBuffer(numBytes);
 				var view = new Uint8Array(arrayBuffer);
-				for ( var i=0; i<view.length; i++ ) {
-					view[i] = value;
+
+				var numMessages = 1;
+				for ( var k=0; k<numMessages; k++ ) {
+					for ( var i=0; i<view.length; i++ ) {
+						view[i] = value + k;
+					}
+					websocketRelayClient.sendArrayBuffer(arrayBuffer);
 				}
-				websocketRelayClient.sendArrayBuffer(arrayBuffer);
 			});
 		websocketRelayClient.onBinaryMessageReceived = 
 			function(arrayBuffer){
@@ -87,7 +91,7 @@
 				// 	t += view[i] + "-";
 				// }
 				t+=view[0];
-				receiveBinaryBox.innerHTML += "received " + arrayBuffer.byteLength + " bytes: " + t + "\n";
+				receiveBinaryBox.innerHTML += performance.now().toFixed(2) + " received " + arrayBuffer.byteLength + " bytes: " + t + "\n";
 			};
 
 	</script>

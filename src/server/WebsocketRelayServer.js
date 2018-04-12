@@ -57,12 +57,28 @@ function WebsocketRelayServer(port) {
                         return;
                     }
 
-                    console.log("WebsocketRelayServer: received '"+ message.utf8Data + " on connection #" + index );
-
+                    
                     for ( var i=0; i<websocketRelayServer._websocketConnections.length; i++ ) {
                         if ( i!==index ) {
                             var connection = websocketRelayServer._websocketConnections[i];
-                            connection.sendUTF( message.utf8Data );
+                            var data = null;
+                            if ( message.utf8Data ) {
+                                console.log("WebsocketRelayServer: received '"+ message.utf8Data + " on connection #" + index );
+                                connection.sendUTF( message.utf8Data );
+                            } else if ( message.binaryData ) {
+                                console.log("WebsocketRelayServer: received binary data on connection #" + index );
+                                if ( message.binaryData ) {
+                                    if ( message.binaryData instanceof Buffer ) {
+                                        console.log("Buffer");
+                                        //const buf2 = Buffer.alloc(10, 65);
+                                        //connection.sendBytes( buf2 );
+                                        connection.sendBytes( message.binaryData );
+                                    } else {
+                                        console.log("something else " + message.binaryData.toString());
+                                    }
+                                }
+                                //connection.sendBytes( message.binaryData );
+                            }
                         }
                     }
                 }

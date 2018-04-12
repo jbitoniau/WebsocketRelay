@@ -13,7 +13,11 @@
 		<button id="sendButton">send</button>
 		<input id="messageTextbox" type="text"/>
 		</br>
-		<textarea id="receiveBox" disabled=true style="width:300px;height:300px"></textarea>
+		<textarea id="receiveBox" disabled=true style="width:300px;height:200px"></textarea>
+		</br>
+		<button id="sendBinaryButton">send binary</button>
+		</br>
+		<textarea id="receiveBinaryBox" disabled=true style="width:300px;height:200px"></textarea>
 	</body>
 
 	<script src="WebsocketRelayClient.js"></script> 
@@ -24,6 +28,8 @@
 		var sendButton = document.getElementById('sendButton');
 		var messageTextbox = document.getElementById('messageTextbox');
 		var receiveBox = document.getElementById('receiveBox');
+		var sendBinaryButton = document.getElementById('sendBinaryButton');
+		var receiveBinaryBox = document.getElementById('receiveBinaryBox');
 
 		pingButton.addEventListener('click', 
 			function(){
@@ -50,6 +56,30 @@
 		websocketRelayClient.onTextMessageReceived = 
 			function(message){
 				receiveBox.innerHTML += message + '\n';
+			};
+
+
+		sendBinaryButton.addEventListener('click', 
+			function(){
+				var message = "HELLOoooww";
+				// var arrayBuffer = new Float32Array(message);
+				var arrayBuffer = new ArrayBuffer(8);
+				var view = new Uint8Array(arrayBuffer);
+				console.log(arrayBuffer.byteLength);
+				console.log(view.length);
+				for ( var i=0; i<view.length; i++ ) {
+					view[i] = 66;
+				}
+				websocketRelayClient.sendArrayBuffer(arrayBuffer);
+			});
+		websocketRelayClient.onBinaryMessageReceived = 
+			function(arrayBuffer){
+				var t = "";
+				var view = new Uint8Array(arrayBuffer);
+				for ( var i=0; i<view.length; i++ ) {
+					t += view[i] + "-";
+				}
+				receiveBinaryBox.innerHTML += "received " + arrayBuffer.byteLength + " bytes: " + t;
 			};
 
 	</script>

@@ -16,6 +16,8 @@
 		<textarea id="receiveBox" disabled=true style="width:300px;height:200px"></textarea>
 		</br>
 		<button id="sendBinaryButton">send binary</button>
+		<span>value<input id="binaryValueTextbox" type="text" value="65"/></span>
+		<span>num bytes<input id="binaryNumBytesTextbox" type="text" value="10"/></span>
 		</br>
 		<textarea id="receiveBinaryBox" disabled=true style="width:300px;height:200px"></textarea>
 	</body>
@@ -30,6 +32,8 @@
 		var receiveBox = document.getElementById('receiveBox');
 		var sendBinaryButton = document.getElementById('sendBinaryButton');
 		var receiveBinaryBox = document.getElementById('receiveBinaryBox');
+		var binaryValueTextbox = document.getElementById('binaryValueTextbox');
+		var binaryNumBytesTextbox = document.getElementById('binaryNumBytesTextbox');
 
 		pingButton.addEventListener('click', 
 			function(){
@@ -58,17 +62,20 @@
 				receiveBox.innerHTML += message + '\n';
 			};
 
-
 		sendBinaryButton.addEventListener('click', 
 			function(){
-				var message = "HELLOoooww";
-				// var arrayBuffer = new Float32Array(message);
-				var arrayBuffer = new ArrayBuffer(8);
+				var value = parseInt(binaryValueTextbox.value);
+				if ( value<0 ) {
+					value = 0;
+				}
+				else if (value>255) {
+					value = 255;
+				}
+				var numBytes = parseInt(binaryNumBytesTextbox.value);
+				var arrayBuffer = new ArrayBuffer(numBytes);
 				var view = new Uint8Array(arrayBuffer);
-				console.log(arrayBuffer.byteLength);
-				console.log(view.length);
 				for ( var i=0; i<view.length; i++ ) {
-					view[i] = 66;
+					view[i] = value;
 				}
 				websocketRelayClient.sendArrayBuffer(arrayBuffer);
 			});
@@ -76,10 +83,11 @@
 			function(arrayBuffer){
 				var t = "";
 				var view = new Uint8Array(arrayBuffer);
-				for ( var i=0; i<view.length; i++ ) {
-					t += view[i] + "-";
-				}
-				receiveBinaryBox.innerHTML += "received " + arrayBuffer.byteLength + " bytes: " + t;
+				// for ( var i=0; i<view.length; i++ ) {
+				// 	t += view[i] + "-";
+				// }
+				t+=view[0];
+				receiveBinaryBox.innerHTML += "received " + arrayBuffer.byteLength + " bytes: " + t + "\n";
 			};
 
 	</script>

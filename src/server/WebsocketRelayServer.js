@@ -67,17 +67,17 @@ function WebsocketRelayServer(port) {
                                 connection.sendUTF( message.utf8Data );
                             } else if ( message.binaryData ) {
                                 console.log("WebsocketRelayServer: received binary data on connection #" + index );
-                                if ( message.binaryData ) {
-                                    if ( message.binaryData instanceof Buffer ) {
-                                        console.log("Buffer");
-                                        //const buf2 = Buffer.alloc(10, 65);
-                                        //connection.sendBytes( buf2 );
-                                        connection.sendBytes( message.binaryData );
-                                    } else {
-                                        console.log("something else " + message.binaryData.toString());
-                                    }
-                                }
-                                //connection.sendBytes( message.binaryData );
+                                // if ( message.binaryData ) {
+                                //     if ( message.binaryData instanceof Buffer ) {
+                                //         console.log("Buffer");
+                                //         //const buf2 = Buffer.alloc(10, 65);
+                                //         //connection.sendBytes( buf2 );
+                                //         connection.sendBytes( message.binaryData );
+                                //     } else {
+                                //         console.log("something else " + message.binaryData.toString());
+                                //     }
+                                // }
+                                connection.sendBytes( message.binaryData );
                             }
                         }
                     }
